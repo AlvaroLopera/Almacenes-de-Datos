@@ -54,5 +54,3 @@ Este proyecto tiene como objetivo principal el diseño y desarrollo de un **alma
 - Si surgen problemas durante la ejecución de los scripts, verifique permisos y compatibilidad de la base de datos.
 - Todas las claves primarias y foráneas han sido definidas para mantener la integridad referencial del almacén.
 
-## Contacto
-Para más información o soporte técnico, por favor contacte al desarrollador del proyecto o consulte la documentación adicional adjunta al repositorio.
