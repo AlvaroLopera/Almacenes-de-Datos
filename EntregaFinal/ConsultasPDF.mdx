@@ -1,0 +1,131 @@
+﻿-- Ingresos por Peso y Género
+SELECT 
+    {[Measures].[Recuento PACIENTE]} ON COLUMNS,
+    NON EMPTY CROSSJOIN(
+        {[PACIENTE].[Peso Ingreso].CHILDREN}, 
+        {[PACIENTE].[Genero].CHILDREN}
+    ) ON ROWS
+FROM [DEADF];
+
+
+SELECT 
+    {[Measures].[Recuento DIAGNOSTICO]} ON COLUMNS,
+    {[DIAGNOSTICO].[Descripcion].CHILDREN} ON ROWS
+FROM [DEADF];
+
+// N�mero de Altas por Edad
+
+SELECT 
+    {[Measures].[Recuento PACIENTE]} ON COLUMNS,
+    {[PACIENTE].[Edad].CHILDREN} ON ROWS
+FROM [DEADF];
+
+
+// Mortalidad por Peso
+
+WITH 
+MEMBER [Measures].[Numero de Muertes] AS 
+    AVG([PACIENTE].[Peso Ingreso], [Measures].[Recuento PACIENTE])
+
+SELECT 
+    {[Measures].[Numero de Muertes]} ON COLUMNS,
+    {[PACIENTE].[Peso Ingreso].CHILDREN} ON ROWS
+FROM [DEADF];
+
+
+SELECT 
+    {[Measures].[Recuento PACIENTE]} ON COLUMNS,
+    {[PACIENTE].[Edad].CHILDREN} ON ROWS
+FROM [DEADF];
+
+
+//Medicamentos Administrados (Eje X: Nombre, Eje Y: Recuento)
+
+SELECT 
+    {[Measures].[Recuento MEDICAMENTO]} ON COLUMNS,
+    {[MEDICAMENTO].[Nombre].MEMBERS} ON ROWS
+FROM [DEADF];
+
+
+//Recuento Medicamento por PRNT (Leyenda: PRNT, Valores: Recuento MEDICAMENTO)
+
+SELECT 
+    {[Measures].[Recuento MEDICAMENTO]} ON COLUMNS,
+    {[MEDICAMENTO].[PRNT].MEMBERS} ON ROWS
+FROM [DEADF];
+
+
+SELECT 
+    {[Measures].[Recuento MEDICAMENTO]} ON COLUMNS,
+    CROSSJOIN(
+        {[MEDICAMENTO].[Id Ingreso Paciente].MEMBERS},
+        {[MEDICAMENTO].[Frecuencia].MEMBERS}
+    ) ON ROWS
+FROM [DEADF];
+
+
+// Recuento de PACIENTES por Región y Hospital
+
+SELECT 
+    {[Region].[Region].MEMBERS} ON ROWS,
+    {[Id Hospital].[Id Hospital].MEMBERS} ON COLUMNS
+FROM [DEADF]
+WHERE ([Measures].[Recuento PACIENTE])
+;
+
+// Recuento de HOSPITALES por Estado Teaching y Región
+
+SELECT 
+    {[Estado Teaching].[Estado Teaching].MEMBERS} ON ROWS,
+    {[Region].[Region].MEMBERS} ON COLUMNS
+FROM [DEADF]
+WHERE ([Measures].[Recuento HOSPITAL])
+;
+
+
+// Recuento de PACIENTES por Total de Camas y Región
+
+SELECT 
+    {[Total Camas].[Total Camas].MEMBERS} ON ROWS,
+    {[Region].[Region].MEMBERS} ON COLUMNS
+FROM [DEADF]
+WHERE ([Measures].[Recuento PACIENTE]);
+
+
+SELECT 
+    {[Mortalidad Media].[Mortalidad Media].MEMBERS} ON ROWS,
+    {[Region].[Region].MEMBERS} ON COLUMNS
+FROM [DEADF]
+WHERE ([Measures].[Recuento HOSPITAL]);
+
+WITH 
+MEMBER [Measures].[Porcentaje Mortalidad] AS 
+    ([Measures].[Recuento Mortalidad] / [Measures].[Recuento HOSPITAL]) * 100
+SELECT 
+    {[Region].[Region].MEMBERS} ON ROWS,
+    {[Mortalidad Media].[Mortalidad Media].MEMBERS} ON COLUMNS
+FROM [DEADF];
+
+-- Recuento de LABORATORIO RESULTADOS por Fecha Prueba
+SELECT 
+    {[Fecha Prueba].[Fecha Prueba].MEMBERS} ON ROWS,
+    {[Measures].[Recuento LABORATORIO RESULTADOS]} ON COLUMNS
+FROM [DEADF];
+
+-- Recuento de LABORATORIO RESULTADOS por Año y Pk Tiempo
+SELECT 
+    {[Tiempo].[Año]} * {[Pk Tiempo].[Pk Tiempo]} ON ROWS,
+    {[Measures].[Recuento LABORATORIO RESULTADOS]} ON COLUMNS
+FROM [DEADF];
+
+-- Recuento de LABORATORIO RESULTADOS por Descripción y Pk Ingreso
+SELECT 
+    {[Descripcion].[Descripcion].MEMBERS} * {[Pk Ingreso].[Pk Ingreso].MEMBERS} ON ROWS,
+    {[Measures].[Recuento LABORATORIO RESULTADOS]} ON COLUMNS
+FROM [DEADF];
+
+-- Recuento de LABORATORIO RESULTADOS por Género e Id Lab Res
+SELECT 
+    NON EMPTY {[Genero].[Genero].MEMBERS} * {[Id Lab Res].[Id Lab Res].MEMBERS} ON ROWS,
+    {[Measures].[Recuento LABORATORIO RESULTADOS]} ON COLUMNS
+FROM [DEADF];
